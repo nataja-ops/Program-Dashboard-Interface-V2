@@ -4,31 +4,23 @@ export default async function handler(req, res) {
   if (req.method === 'OPTIONS') return res.status(200).end();
 
   const token = process.env.AIRTABLE_TOKEN;
-  if (!token) return res.status(500).json({ error: 'AIRTABLE_TOKEN not set' });
+  if (!token) return res.status(500).json({ error: 'AIRTABLE_TOKEN not configured in Vercel environment variables' });
 
-  const BASE_ID = 'apptKJnbKllpLEA8u';
-  const { table, fields, filterByFormula, maxRecords = 100, view } = req.query;
+  const BASE = 'apptKJnbKllpLEA8u';
+  const { table, fields, filterByFormula, maxRecords } = req.query;
   if (!table) return res.status(400).json({ error: 'table param required' });
 
-  const params = new URLSearchParams();
-  if (view) params.set('view', view);
-  if (filterByFormula) params.set('filterByFormula', filterByFormula);
-  params.set('pageSize', Math.min(Number(maxRecords), 100));
-  if (fields) {
-    fields.split(',').forEach(f => params.append('fields[]', f.trim()));
-  }
-
-  const url = `https://api.airtable.com/v0/${BASE_ID}/${table}?${params}`;
+  const p = new URLSearchParams();
+  p.set('pageSize', Math.min(Number(maxRecords || 100), 100));
+  if (filterByFormula) p.set('filterByFormula', filterByFormula);
+  if (fields) fields.split(',').forEach(f => p.append('fields[]', f.trim()));
 
   try {
-    const airtableRes = await fetch(url, {
+    const r = await fetch(`https://api.airtable.com/v0/${BASE}/${encodeURIComponent(table)}?${p}`, {
       headers: { Authorization: `Bearer ${token}` }
     });
-    if (!airtableRes.ok) {
-      const err = await airtableRes.text();
-      return res.status(airtableRes.status).json({ error: err });
-    }
-    const data = await airtableRes.json();
+    if (!r.ok) return res.status(r.status).json({ error: await r.text() });
+    const data = await r.json();
     res.setHeader('Cache-Control', 's-maxage=60, stale-while-revalidate=120');
     return res.status(200).json(data);
   } catch (e) {

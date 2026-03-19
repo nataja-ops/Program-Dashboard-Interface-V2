@@ -5,239 +5,182 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>aiEDU Programs</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/topojson/3.0.2/topojson.min.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:13px;color:#1a1a1a;background:#f5f4f0}
-a{color:inherit;text-decoration:none}
-
-/* header */
 .hdr{background:#534AB7;padding:0 20px;height:50px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
 .logo{display:flex;align-items:center;gap:10px}
-.logo-mark{width:28px;height:28px;background:#9FE1CB;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;color:#085041}
-.logo-text{font-size:15px;font-weight:500;color:#fff}
-.logo-sep{color:rgba(255,255,255,.3);margin:0 6px}
-.logo-sub{font-size:13px;color:rgba(255,255,255,.7)}
-.fy-badge{font-size:11px;background:rgba(255,255,255,.15);color:rgba(255,255,255,.9);padding:3px 10px;border-radius:10px}
-.my-btn{display:flex;align-items:center;gap:7px;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.25);border-radius:8px;padding:6px 14px;cursor:pointer;color:#fff;font-size:12px;font-weight:500}
-.my-btn:hover{background:rgba(255,255,255,.22)}
-.hdr-right{display:flex;align-items:center;gap:10px}
-
-/* nav */
+.lm{width:28px;height:28px;background:#9FE1CB;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;color:#085041}
+.lt{font-size:15px;font-weight:500;color:#fff}
+.ls{color:rgba(255,255,255,.3);margin:0 6px}
+.lb{font-size:13px;color:rgba(255,255,255,.7)}
+.fy-tag{font-size:11px;background:rgba(255,255,255,.15);color:rgba(255,255,255,.9);padding:3px 10px;border-radius:10px}
+.dbtn{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.25);border-radius:8px;padding:5px 13px;cursor:pointer;color:#fff;font-size:12px;font-weight:500}
+.dbtn:hover{background:rgba(255,255,255,.22)}
 .nav{background:#fff;border-bottom:1px solid rgba(0,0,0,.08);padding:0 20px;display:flex;height:42px;position:sticky;top:50px;z-index:99}
-.ni{padding:0 14px;font-size:13px;cursor:pointer;color:#666;border-bottom:2px solid transparent;display:flex;align-items:center;white-space:nowrap;transition:color .15s}
+.ni{padding:0 14px;font-size:13px;cursor:pointer;color:#666;border-bottom:2px solid transparent;display:flex;align-items:center;white-space:nowrap}
 .ni:hover{color:#1a1a1a;background:#f5f4f0}
 .ni.active{color:#534AB7;font-weight:500;border-bottom-color:#534AB7}
-
-/* pages */
-.page{display:none;padding:20px}
-.page.active{display:block}
-.page-title{font-size:20px;font-weight:500;margin-bottom:3px}
-.page-sub{font-size:12px;color:#888;margin-bottom:16px}
-
-/* metric cards */
+.pg{display:none;padding:20px}
+.pg.active{display:block}
+.ptitle{font-size:20px;font-weight:500;margin-bottom:3px}
+.psub{font-size:12px;color:#888;margin-bottom:16px}
 .metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:16px}
 .mc{background:#fff;border:1px solid rgba(0,0,0,.08);border-radius:12px;padding:13px 15px}
 .ml{font-size:11px;color:#888;margin-bottom:4px}
 .mv{font-size:22px;font-weight:500}
 .ms{font-size:11px;color:#888;margin-top:2px}
-
-/* section cards */
-.sc{background:#fff;border:1px solid rgba(0,0,0,.08);border-radius:12px;padding:14px 16px;margin-bottom:12px}
-.sc:last-child{margin-bottom:0}
-.sc-title{font-size:12px;font-weight:600;color:#888;text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px}
-.sc-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
-
-/* grid layouts */
 .g2{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:12px;margin-bottom:12px}
 .g3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-bottom:12px}
 .g5{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;margin-bottom:14px}
-
-/* chart legend */
+.sc{background:#fff;border:1px solid rgba(0,0,0,.08);border-radius:12px;padding:14px 16px;margin-bottom:12px}
+.sc:last-child{margin-bottom:0}
+.sct{font-size:11px;font-weight:600;color:#888;text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px}
+.sch{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
 .leg{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:8px;font-size:11px;color:#666}
 .li{display:flex;align-items:center;gap:4px}
 .lsq{width:9px;height:9px;border-radius:2px;flex-shrink:0}
-
-/* badges */
 .badge{display:inline-flex;align-items:center;padding:2px 7px;border-radius:10px;font-size:11px;font-weight:500;white-space:nowrap}
 .bg{background:#EAF3DE;color:#3B6D11}.ba{background:#FAEEDA;color:#854F0B}.bb{background:#E6F1FB;color:#185FA5}.bp{background:#EEEDFE;color:#534AB7}.bc{background:#FAECE7;color:#993C1D}.bz{background:#F1EFE8;color:#5F5E5A}.br{background:#FCEBEB;color:#A32D2D}.bt{background:#E1F5EE;color:#0F6E56}
-
-/* table */
 .dt{width:100%;border-collapse:collapse;font-size:12px}
 .dt th{padding:7px 10px;text-align:left;font-size:11px;font-weight:500;color:#888;background:#f8f7f4;border-bottom:1px solid rgba(0,0,0,.07);white-space:nowrap}
 .dt td{padding:8px 10px;border-bottom:1px solid rgba(0,0,0,.06)}
 .dt tr:last-child td{border-bottom:none}
 .dt tr:hover td{background:#f8f7f4}
-
-/* activity feed */
 .act{display:flex;gap:9px;padding:7px 0;border-bottom:1px solid rgba(0,0,0,.06);align-items:flex-start}
 .act:last-child{border-bottom:none}
 .adot{width:7px;height:7px;border-radius:50%;flex-shrink:0;margin-top:3px}
 .atxt{font-size:12px;line-height:1.4}
 .atime{font-size:11px;color:#aaa;margin-top:1px}
-
-/* progress bar */
 .pb{background:#eee;border-radius:4px;height:5px;overflow:hidden}
 .pbf{height:5px;border-radius:4px;background:#534AB7}
-
-/* kanban */
-.kanban{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;margin-top:14px}
+.kanban{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px}
 .kcol{background:#f5f4f0;border-radius:12px;padding:10px}
 .khd{display:flex;align-items:center;justify-content:space-between;font-size:11px;font-weight:500;color:#888;margin-bottom:8px}
 .kct{background:#fff;border-radius:8px;padding:1px 7px;font-size:10px}
-.kcard{background:#fff;border:1px solid rgba(0,0,0,.08);border-radius:8px;padding:9px 10px;margin-bottom:7px;cursor:pointer;transition:border-color .15s}
+.kcard{background:#fff;border:1px solid rgba(0,0,0,.08);border-radius:8px;padding:9px 10px;margin-bottom:7px;cursor:pointer}
 .kcard:last-child{margin-bottom:0}
 .kcard:hover{border-color:#534AB7}
 .kn{font-size:12px;font-weight:500;margin-bottom:2px}
 .ks{font-size:11px;color:#888}
 .kv{font-size:11px;font-weight:500;margin-top:4px}
-
-/* event rows */
-.ev-row{display:flex;gap:12px;padding:10px 0;border-bottom:1px solid rgba(0,0,0,.06);align-items:flex-start}
-.ev-row:last-child{border-bottom:none}
-.evd{width:40px;text-align:center;flex-shrink:0}
-.evm{font-size:10px;color:#aaa;text-transform:uppercase}
-.evday{font-size:18px;font-weight:500;color:#534AB7;line-height:1.1}
-
-/* rubric bars */
+.erow{display:flex;gap:12px;padding:10px 0;border-bottom:1px solid rgba(0,0,0,.06);align-items:flex-start}
+.erow:last-child{border-bottom:none}
+.edate{width:40px;text-align:center;flex-shrink:0}
+.emon{font-size:10px;color:#aaa;text-transform:uppercase}
+.eday{font-size:18px;font-weight:500;color:#534AB7;line-height:1.1}
 .rb{display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid rgba(0,0,0,.06)}
 .rb:last-child{border-bottom:none}
 .rl{font-size:12px;flex:1}
 .rs{font-size:12px;font-weight:500;color:#534AB7;min-width:40px;text-align:right}
-
-/* partner cards */
 .pcards{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}
-.pcard{background:#fff;border:1px solid rgba(0,0,0,.08);border-radius:12px;padding:14px;cursor:pointer;transition:border-color .15s}
+.pcard{background:#fff;border:1px solid rgba(0,0,0,.08);border-radius:12px;padding:14px;cursor:pointer}
 .pcard:hover{border-color:#534AB7}
-.pcard-hd{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px}
-.pcard-name{font-size:14px;font-weight:500}
-.pcard-type{font-size:11px;color:#888;margin-top:2px}
-.pg2{display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:12px;margin-bottom:10px}
-.pgl{color:#aaa;font-size:11px}
-.pgv{font-weight:500;margin-top:1px}
-
-/* sub-nav */
-.subnav{background:#fff;border-bottom:1px solid rgba(0,0,0,.08);padding:0 20px;display:flex;gap:0}
-.sni{padding:6px 14px;font-size:12px;cursor:pointer;color:#888;border-bottom:2px solid transparent;white-space:nowrap}
-.sni.active{color:#534AB7;font-weight:500;border-bottom-color:#534AB7}
-.sni:hover{color:#1a1a1a}
-
-/* filter bar */
 .fbar{display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap;background:#fff;border:1px solid rgba(0,0,0,.08);border-radius:12px;padding:10px 14px}
 .fl{font-size:11px;font-weight:500;color:#888}
 .fsep{width:1px;height:18px;background:rgba(0,0,0,.1)}
 select{font-size:12px;padding:4px 8px;border:1px solid rgba(0,0,0,.15);border-radius:8px;background:#fff;color:#1a1a1a;cursor:pointer}
-
-/* personal dashboard */
-.dash-bar{background:#fff;border-bottom:1px solid rgba(0,0,0,.08);padding:8px 20px;display:flex;align-items:center;gap:12px;position:sticky;top:50px;z-index:98}
-.back{display:flex;align-items:center;gap:5px;font-size:13px;color:#534AB7;cursor:pointer}
-.avatar{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:500;flex-shrink:0}
-.task-row{display:flex;align-items:center;gap:9px;padding:7px 0;border-bottom:1px solid rgba(0,0,0,.06);font-size:12px}
-.task-row:last-child{border-bottom:none}
-.tcb{width:14px;height:14px;border:1.5px solid #ccc;border-radius:3px;flex-shrink:0;cursor:pointer;display:flex;align-items:center;justify-content:center}
-.tcb.done{background:#534AB7;border-color:#534AB7}
-.tcb.done::after{content:'';width:6px;height:4px;border-left:1.5px solid #fff;border-bottom:1.5px solid #fff;transform:rotate(-45deg) translateY(-1px);display:block}
-
-/* loading */
-.loading{text-align:center;padding:40px;color:#aaa;font-size:13px}
-.skeleton{background:#eee;border-radius:4px;animation:sk 1.2s ease-in-out infinite}
-@keyframes sk{0%,100%{opacity:1}50%{opacity:.4}}
-.btn{padding:5px 12px;font-size:12px;border:1px solid rgba(0,0,0,.15);border-radius:8px;background:transparent;color:#534AB7;cursor:pointer;font-weight:500}
-.btn:hover{background:#f0efff}
-.btn-primary{background:#534AB7;color:#fff;border-color:#534AB7}
-.btn-primary:hover{background:#3C3489}
-
-/* stage strip */
+.subnav{background:#fff;border-bottom:1px solid rgba(0,0,0,.08);padding:0 20px;display:flex;margin:0 -20px 16px}
+.sni{padding:7px 14px;font-size:12px;cursor:pointer;color:#888;border-bottom:2px solid transparent;white-space:nowrap}
+.sni.active{color:#534AB7;font-weight:500;border-bottom-color:#534AB7}
+.sni:hover{color:#1a1a1a}
 .strip{display:flex;border-radius:12px;overflow:hidden;margin-bottom:14px;height:36px}
 .sseg{flex:1;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;cursor:pointer;transition:opacity .15s}
 .sseg.dim{opacity:.3}
-.sseg:hover{opacity:.85}
+.dash-bar{background:#fff;border-bottom:1px solid rgba(0,0,0,.08);padding:8px 20px;display:flex;align-items:center;gap:12px;position:sticky;top:50px;z-index:98}
+.back{font-size:13px;color:#534AB7;cursor:pointer}
+.avatar{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:500}
+.tr{display:flex;align-items:center;gap:9px;padding:7px 0;border-bottom:1px solid rgba(0,0,0,.06);font-size:12px}
+.tr:last-child{border-bottom:none}
+.tcb{width:14px;height:14px;border:1.5px solid #ccc;border-radius:3px;flex-shrink:0;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.tcb.done{background:#534AB7;border-color:#534AB7}
+.tcb.done::after{content:'';width:6px;height:4px;border-left:1.5px solid #fff;border-bottom:1.5px solid #fff;transform:rotate(-45deg) translateY(-1px);display:block}
+.loading{text-align:center;padding:32px;color:#aaa;font-size:13px}
+.err-bar{background:#FCEBEB;color:#A32D2D;padding:10px 20px;font-size:12px;display:none}
+.btn{padding:5px 12px;font-size:12px;border:1px solid rgba(0,0,0,.15);border-radius:8px;background:transparent;color:#534AB7;cursor:pointer;font-weight:500}
+.btn:hover{background:#f0efff}
+.btn-p{background:#534AB7;color:#fff;border-color:#534AB7}
+.btn-p:hover{background:#3C3489}
+@keyframes sk{0%,100%{opacity:1}50%{opacity:.4}}
+.sk{animation:sk 1.2s ease-in-out infinite;background:#eee;border-radius:8px}
 </style>
 </head>
 <body>
 
-<!-- GLOBAL HEADER -->
 <div class="hdr">
   <div class="logo">
-    <div class="logo-mark">ai</div>
-    <span class="logo-text">aiEDU</span>
-    <span class="logo-sep">|</span>
-    <span class="logo-sub">Programs</span>
+    <div class="lm">ai</div>
+    <span class="lt">aiEDU</span><span class="ls">|</span><span class="lb">Programs</span>
   </div>
-  <div class="hdr-right">
-    <span class="fy-badge" id="fy-label">FY26</span>
-    <div class="my-btn" onclick="openDash()">
+  <div style="display:flex;align-items:center;gap:10px">
+    <span class="fy-tag">FY26</span>
+    <div class="dbtn" onclick="openDash()">
       <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="5" r="3" stroke="white" stroke-width="1.5"/><path d="M2 14c0-3.3 2.7-6 6-6s6 2.7 6 6" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg>
       My dashboard
     </div>
   </div>
 </div>
 
-<!-- MAIN NAV -->
 <div class="nav" id="main-nav">
   <div class="ni active" onclick="go('ov',this)">Overview</div>
   <div class="ni" onclick="go('pt',this)">Partnerships</div>
   <div class="ni" onclick="go('pl',this)">Pipeline dashboard</div>
-  <div class="ni" onclick="go('ev',this)">Events & PL</div>
+  <div class="ni" onclick="go('ev',this)">Events &amp; PL</div>
   <div class="ni" onclick="go('im',this)">Impact</div>
 </div>
 
+<div class="err-bar" id="err">Could not load Airtable data. Check your AIRTABLE_TOKEN in Vercel environment variables has <strong>data.records:read</strong> scope.</div>
+
 <!-- OVERVIEW -->
-<div class="page active" id="pg-ov">
-  <div class="page-title">Program overview</div>
-  <div class="page-sub" id="ov-sub">Loading data from Airtable…</div>
-  <div class="metrics" id="ov-metrics"><div class="mc skeleton" style="height:72px"></div><div class="mc skeleton" style="height:72px"></div><div class="mc skeleton" style="height:72px"></div><div class="mc skeleton" style="height:72px"></div></div>
-  <div class="g2">
-    <div class="sc" style="margin-bottom:0">
-      <div class="sc-title">Pipeline by funding stage</div>
-      <div class="leg" id="leg-ov1"></div>
-      <div style="position:relative;height:180px"><canvas id="ov1"></canvas></div>
-    </div>
-    <div class="sc" style="margin-bottom:0">
-      <div class="sc-title">Fee-for-service by fiscal year</div>
-      <div class="leg" id="leg-ov2"></div>
-      <div style="position:relative;height:180px"><canvas id="ov2"></canvas></div>
-    </div>
+<div class="pg active" id="pg-ov">
+  <div class="ptitle">Program overview</div>
+  <div class="psub" id="ov-sub">Loading data…</div>
+  <div class="metrics" id="ov-met">
+    <div class="mc sk" style="height:72px"></div><div class="mc sk" style="height:72px"></div>
+    <div class="mc sk" style="height:72px"></div><div class="mc sk" style="height:72px"></div>
   </div>
   <div class="g2">
+    <div class="sc" style="margin-bottom:0"><div class="sct">Pipeline by stage</div><div class="leg" id="lg-ov1"></div><div style="position:relative;height:180px"><canvas id="cv-ov1"></canvas></div></div>
+    <div class="sc" style="margin-bottom:0"><div class="sct">FFS by fiscal year</div><div class="leg" id="lg-ov2"></div><div style="position:relative;height:180px"><canvas id="cv-ov2"></canvas></div></div>
+  </div>
+  <div class="g2" style="margin-top:12px">
     <div class="sc" style="margin-bottom:0">
-      <div class="sc-head"><span class="sc-title" style="margin-bottom:0">Active partnerships</span><button class="btn" onclick="go('pt',document.querySelectorAll('.ni')[1])">View all</button></div>
-      <table class="dt"><thead><tr><th>Partner</th><th>Status</th><th>FY26</th><th>Owner</th></tr></thead><tbody id="ov-ptable"><tr><td colspan="4" class="loading">Loading…</td></tr></tbody></table>
+      <div class="sch"><span class="sct" style="margin-bottom:0">Active partnerships</span><button class="btn" onclick="go('pt',document.querySelectorAll('.ni')[1])">View all</button></div>
+      <table class="dt"><thead><tr><th>Partner</th><th>Stage</th><th>FY26</th></tr></thead><tbody id="ov-ptbl"><tr><td colspan="3" class="loading">Loading…</td></tr></tbody></table>
     </div>
-    <div class="sc" style="margin-bottom:0">
-      <div class="sc-title">Recent interactions</div>
-      <div id="ov-activity"><div class="loading">Loading…</div></div>
-    </div>
+    <div class="sc" style="margin-bottom:0"><div class="sct">Recent interactions</div><div id="ov-feed"><div class="loading">Loading…</div></div></div>
+  </div>
+  <div class="sc" style="margin-top:12px">
+    <div class="sct">Partner geography</div>
+    <div class="leg"><span class="li"><span style="width:9px;height:9px;border-radius:50%;background:#534AB7;display:inline-block"></span>Active</span><span class="li"><span style="width:9px;height:9px;border-radius:50%;background:#D85A30;display:inline-block"></span>Expiring</span><span class="li"><span style="width:9px;height:9px;border-radius:50%;background:#BA7517;display:inline-block"></span>Prospect</span></div>
+    <div id="us-map" style="border-radius:8px;overflow:hidden;background:#f5f4f0;height:200px"></div>
   </div>
 </div>
 
 <!-- PARTNERSHIPS -->
-<div class="page" id="pg-pt">
-  <div class="page-title">Partnerships</div>
-  <div class="page-sub">Active and in-pipeline partners</div>
+<div class="pg" id="pg-pt">
+  <div class="ptitle">Partnerships</div>
+  <div class="psub">All active and in-pipeline partners</div>
   <div class="fbar">
     <span class="fl">Status</span>
     <select id="f-stat" onchange="filterPt()"><option value="">All</option><option>Active</option><option>Expiring soon</option><option>Inactive</option></select>
-    <div class="fsep"></div>
-    <span class="fl">Type</span>
-    <select id="f-type" onchange="filterPt()"><option value="">All</option><option>District</option><option>Charter</option><option>CMO</option></select>
   </div>
-  <div class="pcards" id="pt-cards"><div class="loading">Loading partnerships…</div></div>
+  <div class="pcards" id="pt-cards"><div class="loading">Loading…</div></div>
 </div>
 
 <!-- PIPELINE DASHBOARD -->
-<div class="page" id="pg-pl">
-  <div style="padding:20px 0 0">
-    <div class="subnav" style="margin:0 -20px;padding:0 20px">
-      <div class="sni active" onclick="plSub('charts',this)">Charts</div>
-      <div class="sni" onclick="plSub('kanban',this)">Kanban</div>
-      <div class="sni" onclick="plSub('list',this)">List</div>
-    </div>
+<div class="pg" id="pg-pl">
+  <div class="subnav">
+    <div class="sni active" onclick="plSub('charts',this)">Charts</div>
+    <div class="sni" onclick="plSub('kanban',this)">Kanban</div>
+    <div class="sni" onclick="plSub('list',this)">List</div>
   </div>
-
-  <div id="pl-charts" style="padding-top:16px">
+  <div id="pl-charts">
     <div class="fbar">
       <span class="fl">Fiscal year</span>
-      <select id="pl-fy" onchange="buildPL()"><option value="fy26" selected>FY26</option><option value="fy25">FY25</option><option value="fy27">FY27</option></select>
+      <select id="pl-fy" onchange="buildPL()"><option value="fy26">FY26</option><option value="fy25">FY25</option><option value="fy27">FY27</option></select>
       <div class="fsep"></div>
       <span class="fl">Type</span>
       <select id="pl-type" onchange="buildPL()"><option value="">All</option><option>District</option><option>Charter</option><option>CMO</option></select>
@@ -245,92 +188,69 @@ select{font-size:12px;padding:4px 8px;border:1px solid rgba(0,0,0,.15);border-ra
       <span class="fl">Service line</span>
       <select id="pl-sl" onchange="buildPL()"><option value="">All</option><option>PD</option><option>Curriculum</option><option>Assessment</option><option>Rubric</option></select>
     </div>
-    <div class="strip" id="pl-strip">
+    <div class="strip">
       <div class="sseg" style="background:#D3D1C7;color:#5F5E5A" data-s="Prospect" onclick="toggleSeg(this)">Prospect</div>
       <div class="sseg" style="background:#AFA9EC;color:#534AB7" data-s="Outreach" onclick="toggleSeg(this)">Outreach</div>
       <div class="sseg" style="background:#BA7517;color:#fff" data-s="Proposal" onclick="toggleSeg(this)">Proposal</div>
       <div class="sseg" style="background:#5DCAA5;color:#085041" data-s="Negotiation" onclick="toggleSeg(this)">Negotiation</div>
       <div class="sseg" style="background:#534AB7;color:#fff" data-s="Awarded" onclick="toggleSeg(this)">Awarded</div>
     </div>
-    <div class="metrics" id="pl-metrics"></div>
+    <div class="metrics" id="pl-met"></div>
     <div class="g2">
-      <div class="sc" style="margin-bottom:0"><div class="sc-title">Pipeline × fees for service by stage</div><div class="leg" id="leg-pl1"></div><div style="position:relative;height:220px"><canvas id="pl1"></canvas></div></div>
-      <div class="sc" style="margin-bottom:0"><div class="sc-title">By funding stage</div><div class="leg" id="leg-pl2"></div><div style="position:relative;height:220px"><canvas id="pl2"></canvas></div></div>
+      <div class="sc" style="margin-bottom:0"><div class="sct">FFS by pipeline stage</div><div class="leg" id="lg-pl1"></div><div style="position:relative;height:220px"><canvas id="cv-pl1"></canvas></div></div>
+      <div class="sc" style="margin-bottom:0"><div class="sct">By funding stage</div><div class="leg" id="lg-pl2"></div><div style="position:relative;height:220px"><canvas id="cv-pl2"></canvas></div></div>
     </div>
     <div class="g3">
-      <div class="sc" style="margin-bottom:0"><div class="sc-title">By fiscal year</div><div class="leg" id="leg-pl3"></div><div style="position:relative;height:200px"><canvas id="pl3"></canvas></div></div>
-      <div class="sc" style="margin-bottom:0"><div class="sc-title">By service line</div><div class="leg" id="leg-pl4"></div><div style="position:relative;height:200px"><canvas id="pl4"></canvas></div></div>
-      <div class="sc" style="margin-bottom:0"><div class="sc-title">By partnership</div><div class="leg" id="leg-pl5"></div><div style="position:relative;height:200px"><canvas id="pl5"></canvas></div></div>
+      <div class="sc" style="margin-bottom:0"><div class="sct">By fiscal year</div><div class="leg" id="lg-pl3"></div><div style="position:relative;height:200px"><canvas id="cv-pl3"></canvas></div></div>
+      <div class="sc" style="margin-bottom:0"><div class="sct">By service line</div><div class="leg" id="lg-pl4"></div><div style="position:relative;height:200px"><canvas id="cv-pl4"></canvas></div></div>
+      <div class="sc" style="margin-bottom:0"><div class="sct">By partnership (top 8)</div><div class="leg" id="lg-pl5"></div><div style="position:relative;height:200px"><canvas id="cv-pl5"></canvas></div></div>
     </div>
   </div>
-
-  <div id="pl-kanban" style="display:none;padding-top:16px">
-    <div class="g5" id="kb-metrics"></div>
+  <div id="pl-kanban" style="display:none">
+    <div class="g5" id="kb-met"></div>
     <div class="kanban" id="kb-cols"><div class="loading">Loading…</div></div>
   </div>
-
-  <div id="pl-list" style="display:none;padding-top:16px">
+  <div id="pl-list" style="display:none">
     <div class="fbar">
       <span class="fl">Sort</span>
       <select id="ls-sort" onchange="renderList()"><option value="val">Value ↓</option><option value="stage">Stage</option><option value="name">Name</option></select>
       <div class="fsep"></div>
       <span class="fl">Stage</span>
-      <select id="ls-stage" onchange="renderList()"><option value="">All</option><option>Prospect</option><option>Outreach</option><option>Proposal</option><option>Negotiation</option><option>Awarded</option></select>
+      <select id="ls-stg" onchange="renderList()"><option value="">All</option><option>Prospect</option><option>Outreach</option><option>Proposal</option><option>Negotiation</option><option>Awarded</option></select>
     </div>
     <div style="background:#fff;border:1px solid rgba(0,0,0,.08);border-radius:12px;overflow:hidden">
-      <table class="dt"><thead><tr><th>Partner</th><th>Type</th><th>Stage</th><th>Services</th><th>FY26</th><th>FY27 est.</th><th>MOU</th></tr></thead><tbody id="ls-body"></tbody></table>
+      <table class="dt"><thead><tr><th>Partner</th><th>Type</th><th>Stage</th><th>Services</th><th>FY26</th><th>FY27 est.</th></tr></thead><tbody id="ls-body"></tbody></table>
     </div>
   </div>
 </div>
 
 <!-- EVENTS & PL -->
-<div class="page" id="pg-ev">
-  <div class="page-title">Events & professional learning</div>
-  <div class="page-sub" id="ev-sub">Loading…</div>
-  <div class="metrics" id="ev-metrics"></div>
+<div class="pg" id="pg-ev">
+  <div class="ptitle">Events &amp; professional learning</div>
+  <div class="psub" id="ev-sub">Loading…</div>
+  <div class="metrics" id="ev-met"></div>
   <div class="g2">
-    <div class="sc" style="margin-bottom:0">
-      <div class="sc-title">Upcoming events</div>
-      <div id="ev-upcoming"><div class="loading">Loading…</div></div>
-    </div>
-    <div class="sc" style="margin-bottom:0">
-      <div class="sc-title">NPS by recent session</div>
-      <div class="leg" id="leg-ev1"></div>
-      <div style="position:relative;height:220px"><canvas id="ev1"></canvas></div>
-    </div>
+    <div class="sc" style="margin-bottom:0"><div class="sct">Upcoming events</div><div id="ev-up"><div class="loading">Loading…</div></div></div>
+    <div class="sc" style="margin-bottom:0"><div class="sct">NPS by recent session</div><div class="leg" id="lg-ev1"></div><div style="position:relative;height:220px"><canvas id="cv-ev1"></canvas></div></div>
   </div>
-  <div class="sc">
-    <div class="sc-title">Recent sessions</div>
-    <table class="dt"><thead><tr><th>Event</th><th>Date</th><th>Participants</th><th>Type</th><th>NPS</th></tr></thead><tbody id="ev-table"><tr><td colspan="5" class="loading">Loading…</td></tr></tbody></table>
-  </div>
+  <div class="sc" style="margin-top:12px"><div class="sct">Recent sessions</div><table class="dt"><thead><tr><th>Event</th><th>Date</th><th>Participants</th><th>Type</th><th>NPS</th></tr></thead><tbody id="ev-tbl"><tr><td colspan="5" class="loading">Loading…</td></tr></tbody></table></div>
 </div>
 
 <!-- IMPACT -->
-<div class="page" id="pg-im">
-  <div class="page-title">Program impact</div>
-  <div class="page-sub">AI readiness and partner outcomes · FY26</div>
+<div class="pg" id="pg-im">
+  <div class="ptitle">Program impact</div>
+  <div class="psub">AI readiness and partner outcomes · FY26</div>
   <div class="g2">
-    <div class="sc" style="margin-bottom:0">
-      <div class="sc-title">AI readiness rubric — avg score by domain</div>
-      <div class="leg" id="leg-im1"></div>
-      <div style="position:relative;height:210px"><canvas id="im1"></canvas></div>
-    </div>
-    <div class="sc" style="margin-bottom:0">
-      <div class="sc-title">Partner satisfaction scores</div>
-      <div id="im-sat"></div>
-    </div>
+    <div class="sc" style="margin-bottom:0"><div class="sct">AI readiness by domain</div><div class="leg" id="lg-im1"></div><div style="position:relative;height:210px"><canvas id="cv-im1"></canvas></div></div>
+    <div class="sc" style="margin-bottom:0"><div class="sct">Partner satisfaction</div><div id="im-sat"><div class="loading">Loading…</div></div></div>
   </div>
-  <div class="sc">
-    <div class="sc-title">Educators reached by partner</div>
-    <div class="leg" id="leg-im2"></div>
-    <div style="position:relative;height:180px"><canvas id="im2"></canvas></div>
-  </div>
+  <div class="sc" style="margin-top:12px"><div class="sct">Educators reached by partner</div><div class="leg" id="lg-im2"></div><div style="position:relative;height:180px"><canvas id="cv-im2"></canvas></div></div>
 </div>
 
 <!-- MY DASHBOARD -->
 <div id="pg-dash" style="display:none">
   <div class="dash-bar">
-    <div class="back" onclick="closeDash()">← Back to program overview</div>
+    <div class="back" onclick="closeDash()">← Back to overview</div>
     <div style="margin-left:auto;display:flex;align-items:center;gap:8px">
       <span style="font-size:12px;color:#888">Viewing:</span>
       <select id="person-sel" onchange="loadPerson(this.value)" style="font-size:13px;font-weight:500;color:#534AB7;border-color:#534AB7">
@@ -338,429 +258,269 @@ select{font-size:12px;padding:4px 8px;border:1px solid rgba(0,0,0,.15);border-ra
       </select>
     </div>
   </div>
-  <div id="person-content" style="padding:20px">
-    <div class="loading">Select a team member above</div>
-  </div>
+  <div id="person-content" style="padding:20px"><div class="loading">Select a team member above</div></div>
 </div>
 
 <script>
-// ─── CONFIG ───────────────────────────────────────────────────────────────────
-const BASE = 'apptKJnbKllpLEA8u';
-const TABLES = {
-  opps:     'tblfdNFG4TAPFxWbf',  // Opportunities by Pipeline
-  staff:    'tblS00tZ2IjvCWuPt',  // Staff
-  staffSyn: 'tblnXmzDnl6Pt4zTU',  // Staff (Synced)
-  depts:    'tbl5NTxNY3nOQh7HP',  // Departments
-  events:   'tblMARqGLxR4Gywsm',  // Events
-  ffs:      'tblFx8HuJbOoHqQmv',  // Fee-For Service Tracker
-  docs:     'tblrAyCFkP53jJSnB',  // Documents & Contracts
-  partners: 'tblCaVtn0oLAzJawA',  // Program Accounts (Synced)
-  interact: 'tblppd7WVOFF3pkII',  // Interactions
-};
-
-// ─── API HELPER ───────────────────────────────────────────────────────────────
-async function airtable(table, opts = {}) {
-  const p = new URLSearchParams({ table });
-  if (opts.fields)  p.set('fields', opts.fields.join(','));
-  if (opts.filter)  p.set('filterByFormula', opts.filter);
-  if (opts.max)     p.set('maxRecords', opts.max);
-  if (opts.view)    p.set('view', opts.view);
-  try {
-    const r = await fetch(`/api/airtable?${p}`);
-    if (!r.ok) throw new Error(await r.text());
-    return (await r.json()).records || [];
-  } catch(e) {
-    console.warn('Airtable fetch failed:', e.message);
-    return [];
-  }
-}
-
-// ─── STATE ────────────────────────────────────────────────────────────────────
-var DATA = { opps:[], staff:[], events:[], partners:[], interact:[] };
+var D = { opps:[], staff:[], events:[], partners:[], interact:[] };
 var CH = {};
-var activeSegs = { Prospect:true, Outreach:true, Proposal:true, Negotiation:true, Awarded:true };
+var SEGS = { Prospect:true, Outreach:true, Proposal:true, Negotiation:true, Awarded:true };
+var STAGES = ['Prospect','Outreach','Proposal','Negotiation','Awarded'];
+var SC = { Prospect:'#D3D1C7', Outreach:'#AFA9EC', Proposal:'#BA7517', Negotiation:'#5DCAA5', Awarded:'#534AB7' };
 
-// ─── FORMATTING ───────────────────────────────────────────────────────────────
-function fk(v) { return '$' + Math.round(v||0) + 'k'; }
+async function api(table, fields, filter, max) {
+  var p = new URLSearchParams({ table: table });
+  if (fields) p.set('fields', fields.join(','));
+  if (filter) p.set('filterByFormula', filter);
+  if (max)    p.set('maxRecords', max);
+  try {
+    var r = await fetch('/api/airtable?' + p);
+    if (!r.ok) { document.getElementById('err').style.display='block'; return []; }
+    return ((await r.json()).records||[]).map(function(x){ return Object.assign({id:x.id},x.fields); });
+  } catch(e) { document.getElementById('err').style.display='block'; return []; }
+}
+
+function fk(v)  { return '$'+Math.round(v||0)+'k'; }
 function fmt(v) { return (v||0).toLocaleString(); }
-function fmtDate(d) {
-  if (!d) return '—';
-  const dt = new Date(d);
-  return dt.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
-}
-function statusBadge(s) {
-  const m = {'Active':'bg','Expiring soon':'bc','Expiring':'bc','Inactive':'bz','Potential Partner':'ba','Prospect':'ba','Cultivation':'ba','Negotiation':'bt','Proposal':'ba','Outreach':'bp','Awarded':'bg','Signed':'bg','Pending':'ba','Expired':'bz','In review':'ba','—':'bz'};
-  return `<span class="badge ${m[s]||'bz'}">${s||'—'}</span>`;
-}
-
-// ─── LOAD ALL DATA ────────────────────────────────────────────────────────────
-async function loadAll() {
-  const [opps, staff, events, partners, interact] = await Promise.all([
-    airtable(TABLES.opps,     { max:100, fields:['Partnership','Pipeline Status','Program Status','Partner Type','Service Lines','Proposed Contract Value','Funding Stage','FY26 Fee for Service','FY25 Fee For Service','FY27 Fee for service'] }),
-    airtable(TABLES.staff,    { max:50,  fields:['Full Name','Status','Type','Email','Department (Team)'] }),
-    airtable(TABLES.events,   { max:100, fields:['Event','Date','Number of Participants','Event Type','In-person v. Virtual','NPS Score','Org Role','Year'] }),
-    airtable(TABLES.partners, { max:100, fields:['Name','Account Status','Website','Address - State - D','Partnership Progress - D','Team Member (Internal Owner)'] }),
-    airtable(TABLES.interact, { max:50,  fields:['Title / Name','Date & Time','Type of Interaction','Department','All Organizations'] }),
-  ]);
-  DATA.opps     = opps.map(r => ({ id:r.id, ...r.fields }));
-  DATA.staff    = staff.map(r => ({ id:r.id, ...r.fields }));
-  DATA.events   = events.map(r => ({ id:r.id, ...r.fields }));
-  DATA.partners = partners.map(r => ({ id:r.id, ...r.fields }));
-  DATA.interact = interact.map(r => ({ id:r.id, ...r.fields }));
-  buildOverview();
-  buildPL();
-  buildEvents();
-  buildImpact();
-  buildPartnerships();
-  populatePersonSelect();
-}
-
-// ─── OVERVIEW ─────────────────────────────────────────────────────────────────
-function buildOverview() {
-  const opps = DATA.opps;
-  const active = opps.filter(o => (o['Pipeline Status']||'') === 'Active');
-  const awarded = opps.filter(o => (o['Funding Stage']||'') === 'Awarded');
-  const totalFFS = awarded.reduce((a,o) => a + (parseFloat(o['FY26 Fee for Service'])||0), 0);
-  const evts = DATA.events;
-  const totalPart = evts.reduce((a,e) => a + (parseInt(e['Number of Participants'])||0), 0);
-
-  document.getElementById('ov-sub').textContent = `FY26 · ${opps.length} total opportunities · ${active.length} active partners`;
-  document.getElementById('ov-metrics').innerHTML =
-    `<div class="mc"><div class="ml">Total opportunities</div><div class="mv" style="color:#534AB7">${opps.length}</div><div class="ms">${active.length} active</div></div>`+
-    `<div class="mc"><div class="ml">Educators reached</div><div class="mv">${fmt(totalPart)}</div><div class="ms">Across ${evts.length} events</div></div>`+
-    `<div class="mc"><div class="ml">FY26 fee-for-service</div><div class="mv" style="color:#3B6D11">${fk(totalFFS/1000)}</div><div class="ms">Awarded</div></div>`+
-    `<div class="mc"><div class="ml">Pipeline total</div><div class="mv">${fk(opps.reduce((a,o)=>a+(parseFloat(o['Proposed Contract Value'])||0),0)/1000)}</div><div class="ms">All stages</div></div>`;
-
-  // Stage donut
-  const stages = ['Awarded','Negotiation','Proposal','Outreach','Prospect'];
-  const sColors = ['#534AB7','#5DCAA5','#BA7517','#AFA9EC','#D3D1C7'];
-  const stageVals = stages.map(s => opps.filter(o => (o['Funding Stage']||o['Pipeline Status']||'') === s).length);
-  document.getElementById('leg-ov1').innerHTML = stages.map((s,i) => `<span class="li"><span class="lsq" style="background:${sColors[i]}"></span>${s} (${stageVals[i]})</span>`).join('');
-  mkChart('ov1',{type:'doughnut',data:{labels:stages,datasets:[{data:stageVals,backgroundColor:sColors,borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,cutout:'58%',plugins:{legend:{display:false}}}});
-
-  // FFS by year
-  const fy25 = opps.reduce((a,o)=>a+(parseFloat(o['FY25 Fee For Service'])||0),0)/1000;
-  const fy26 = opps.reduce((a,o)=>a+(parseFloat(o['FY26 Fee for Service'])||0),0)/1000;
-  const fy27 = opps.reduce((a,o)=>a+(parseFloat(o['FY27 Fee for service'])||0),0)/1000;
-  document.getElementById('leg-ov2').innerHTML = '<span class="li"><span class="lsq" style="background:#534AB7"></span>Fee-for-service</span>';
-  mkChart('ov2',{type:'bar',data:{labels:['FY25','FY26','FY27 est.'],datasets:[{data:[Math.round(fy25),Math.round(fy26),Math.round(fy27)],backgroundColor:['#AFA9EC','#534AB7','#D3D1C7'],borderRadius:4,borderSkipped:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>' '+fk(c.raw)}}},scales:{x:{grid:{display:false}},y:{ticks:{callback:v=>fk(v)},grid:{color:'rgba(0,0,0,.05)'}}}}});
-
-  // Active partnerships table
-  const rows = opps.filter(o=>(o['Pipeline Status']||'')==='Active').slice(0,6).map(o =>
-    `<tr><td style="font-weight:500">${o['Partnership']||'—'}</td><td>${statusBadge(o['Pipeline Status']||'—')}</td><td>${fk((parseFloat(o['FY26 Fee for Service'])||0)/1000)}</td><td>—</td></tr>`
-  ).join('');
-  document.getElementById('ov-ptable').innerHTML = rows || '<tr><td colspan="4" style="color:#aaa;padding:12px 10px">No active partnerships found</td></tr>';
-
-  // Activity feed
-  const feed = DATA.interact.slice(0,5).map(i =>
-    `<div class="act"><div class="adot" style="background:#534AB7"></div><div><div class="atxt">${i['Title / Name']||'Interaction'}</div><div class="atime">${fmtDate(i['Date & Time'])} · ${(i['Department']||[]).join(', ')||'—'}</div></div></div>`
-  ).join('') || '<div style="color:#aaa;font-size:12px;padding:8px 0">No recent interactions</div>';
-  document.getElementById('ov-activity').innerHTML = feed;
-}
-
-// ─── PARTNERSHIPS ─────────────────────────────────────────────────────────────
-function buildPartnerships() {
-  window._allPartners = DATA.partners;
-  filterPt();
-}
-
-function filterPt() {
-  const stat = document.getElementById('f-stat').value;
-  const type = document.getElementById('f-type').value;
-  let data = (window._allPartners||[]);
-  if (stat) data = data.filter(p => (p['Account Status']||'').toLowerCase().includes(stat.toLowerCase()));
-  const html = data.length ? data.map(p => {
-    const name = p['Name']||'—';
-    const status = p['Account Status']||'—';
-    const state = p['Address - State - D']||'—';
-    return `<div class="pcard">
-      <div class="pcard-hd"><div><div class="pcard-name">${name}</div><div class="pcard-type">Partner · ${state}</div></div>${statusBadge(status)}</div>
-      <div class="pg2">
-        <div><div class="pgl">Status</div><div class="pgv">${status}</div></div>
-        <div><div class="pgl">Progress</div><div class="pgv">${p['Partnership Progress - D']||'—'}</div></div>
-      </div>
-      <div class="pb"><div class="pbf" style="width:${status==='Active'?'75':status==='Expiring soon'?'95':'30'}%"></div></div>
-    </div>`;
-  }).join('') : '<div class="loading">No partners match filters</div>';
-  document.getElementById('pt-cards').innerHTML = html;
-}
-
-// ─── PIPELINE DASHBOARD ───────────────────────────────────────────────────────
-function getFY() { return document.getElementById('pl-fy').value; }
-function getFFSVal(o, fy) {
-  if (fy==='fy25') return parseFloat(o['FY25 Fee For Service'])||0;
-  if (fy==='fy27') return parseFloat(o['FY27 Fee for service'])||0;
+function fd(d)  { if(!d)return'—'; var dt=new Date(d); return dt.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}); }
+function stg(o) { return o['Funding Stage']||o['Pipeline Status']||'Prospect'; }
+function fv(o,fy) {
+  if(fy==='fy25') return parseFloat(o['FY25 Fee For Service'])||0;
+  if(fy==='fy27') return parseFloat(o['FY27 Fee for service'])||0;
   return parseFloat(o['FY26 Fee for Service'])||0;
 }
+function bdg(s) {
+  var m={'Active':'bg','Expiring soon':'bc','Expiring':'bc','Inactive':'bz','Prospect':'ba','Cultivation':'ba','Negotiation':'bt','Proposal':'ba','Outreach':'bp','Awarded':'bg','Signed':'bg','Pending':'ba','Expired':'bz','—':'bz'};
+  return '<span class="badge '+(m[s]||'bz')+'">'+(s||'—')+'</span>';
+}
+function mkC(id,cfg) { if(CH[id])CH[id].destroy(); CH[id]=new Chart(document.getElementById(id),cfg); }
 
-function plFiltered() {
-  const fy = getFY();
-  const type = document.getElementById('pl-type').value;
-  const sl = document.getElementById('pl-sl').value;
-  return DATA.opps.filter(o => {
-    const stage = o['Funding Stage'] || o['Pipeline Status'] || '';
-    if (!activeSegs[stage]) return false;
-    if (type && (o['Partner Type']||'') !== type) return false;
-    if (sl && !(o['Service Lines']||[]).includes(sl)) return false;
+async function loadAll() {
+  var res = await Promise.all([
+    api('tblfdNFG4TAPFxWbf',['Partnership','Pipeline Status','Funding Stage','Partner Type','Service Lines','Proposed Contract Value','FY26 Fee for Service','FY25 Fee For Service','FY27 Fee for service'],null,100),
+    api('tblS00tZ2IjvCWuPt',['Full Name','Status','Type','Email','Department (Team)'],null,50),
+    api('tblMARqGLxR4Gywsm',['Event','Date','Number of Participants','Event Type','In-person v. Virtual','NPS Score'],null,100),
+    api('tblCaVtn0oLAzJawA',['Name','Account Status','Address - State - D','Partnership Progress - D'],null,100),
+    api('tblppd7WVOFF3pkII',['Title / Name','Date & Time','Type of Interaction','Department'],null,50)
+  ]);
+  D.opps=res[0]; D.staff=res[1]; D.events=res[2]; D.partners=res[3]; D.interact=res[4];
+  buildOV(); buildPL(); buildEV(); buildIM(); buildPT(); populateSel(); buildMap();
+}
+
+function buildOV() {
+  var o=D.opps, e=D.events;
+  var totP=e.reduce(function(a,x){return a+(parseInt(x['Number of Participants'])||0);},0);
+  var aw=o.filter(function(x){return stg(x)==='Awarded';}).reduce(function(a,x){return a+(parseFloat(x['FY26 Fee for Service'])||0)/1000;},0);
+  var act=o.filter(function(x){return x['Pipeline Status']==='Active';}).length;
+  document.getElementById('ov-sub').textContent='FY26 · '+o.length+' opportunities · '+act+' active partners';
+  document.getElementById('ov-met').innerHTML=
+    '<div class="mc"><div class="ml">Total opportunities</div><div class="mv" style="color:#534AB7">'+o.length+'</div><div class="ms">'+act+' active</div></div>'+
+    '<div class="mc"><div class="ml">Educators reached</div><div class="mv">'+fmt(totP)+'</div><div class="ms">'+e.length+' events</div></div>'+
+    '<div class="mc"><div class="ml">FY26 awarded</div><div class="mv" style="color:#3B6D11">'+fk(aw)+'</div><div class="ms">Fee-for-service</div></div>'+
+    '<div class="mc"><div class="ml">Pipeline total</div><div class="mv">'+fk(o.reduce(function(a,x){return a+(parseFloat(x['Proposed Contract Value'])||0)/1000;},0))+'</div><div class="ms">All stages</div></div>';
+  var sv=STAGES.map(function(s){return o.filter(function(x){return stg(x)===s;}).length;});
+  var sc=STAGES.map(function(s){return SC[s];});
+  document.getElementById('lg-ov1').innerHTML=STAGES.map(function(s,i){return'<span class="li"><span class="lsq" style="background:'+sc[i]+'"></span>'+s+' ('+sv[i]+')</span>';}).join('');
+  mkC('cv-ov1',{type:'doughnut',data:{labels:STAGES,datasets:[{data:sv,backgroundColor:sc,borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,cutout:'58%',plugins:{legend:{display:false}}}});
+  var y25=Math.round(o.reduce(function(a,x){return a+(parseFloat(x['FY25 Fee For Service'])||0)/1000;},0));
+  var y26=Math.round(o.reduce(function(a,x){return a+(parseFloat(x['FY26 Fee for Service'])||0)/1000;},0));
+  var y27=Math.round(o.reduce(function(a,x){return a+(parseFloat(x['FY27 Fee for service'])||0)/1000;},0));
+  document.getElementById('lg-ov2').innerHTML='<span class="li"><span class="lsq" style="background:#534AB7"></span>Fee-for-service</span>';
+  mkC('cv-ov2',{type:'bar',data:{labels:['FY25','FY26','FY27 est.'],datasets:[{data:[y25,y26,y27],backgroundColor:['#AFA9EC','#534AB7','#D3D1C7'],borderRadius:4,borderSkipped:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:function(c){return' '+fk(c.raw);}}}},scales:{x:{grid:{display:false}},y:{ticks:{callback:function(v){return fk(v);}},grid:{color:'rgba(0,0,0,.05)'}}}}});
+  document.getElementById('ov-ptbl').innerHTML=o.filter(function(x){return x['Pipeline Status']==='Active';}).slice(0,6).map(function(x){
+    return'<tr><td style="font-weight:500">'+(x['Partnership']||'—').split('|').pop().trim()+'</td><td>'+bdg(stg(x))+'</td><td>'+fk((parseFloat(x['FY26 Fee for Service'])||0)/1000)+'</td></tr>';
+  }).join('')||'<tr><td colspan="3" style="color:#aaa;padding:12px 10px">No active partnerships found</td></tr>';
+  document.getElementById('ov-feed').innerHTML=D.interact.slice(0,5).map(function(i){
+    return'<div class="act"><div class="adot" style="background:#534AB7"></div><div><div class="atxt">'+(i['Title / Name']||'Interaction')+'</div><div class="atime">'+fd(i['Date & Time'])+'</div></div></div>';
+  }).join('')||'<div style="color:#aaa;font-size:12px;padding:8px 0">No recent interactions</div>';
+}
+
+function buildMap() {
+  var el=document.getElementById('us-map');
+  if(!el||!d3||!topojson) return;
+  var dark=false;
+  var stateStatus={'California':'Active','Texas':'Active','Georgia':'Active','Michigan':'Active','New York':'Active','Arizona':'Expiring soon','Illinois':'Prospect','Washington':'Prospect','Colorado':'Prospect'};
+  var stateColors={'Active':'#534AB7','Expiring soon':'#D85A30','Prospect':'#BA7517'};
+  el.innerHTML='';
+  var svg=d3.select(el).append('svg').attr('viewBox','0 0 800 500').attr('width','100%').attr('height','100%');
+  var path=d3.geoPath(d3.geoAlbersUsa().scale(1000).translate([390,240]));
+  d3.json('https://cdn.jsdelivr.net/npm/us-atlas@3/states-10m.json').then(function(us){
+    svg.selectAll('path').data(topojson.feature(us,us.objects.states).features).join('path')
+      .attr('d',path).attr('stroke','#fff').attr('stroke-width',.5)
+      .attr('fill',function(d){var s=stateStatus[d.properties.name];return s?stateColors[s]:'#D3D1C7';})
+      .append('title').text(function(d){var s=stateStatus[d.properties.name];return s?d.properties.name+' ('+s+')':d.properties.name;});
+  }).catch(function(){el.innerHTML='<div class="loading">Map unavailable</div>';});
+}
+
+function buildPT() { window._pts=D.partners; filterPt(); }
+function filterPt() {
+  var stat=document.getElementById('f-stat').value;
+  var data=(window._pts||[]).filter(function(p){return !stat||(p['Account Status']||'').toLowerCase().includes(stat.toLowerCase());});
+  document.getElementById('pt-cards').innerHTML=data.length?data.map(function(p){
+    var st=p['Account Status']||'—';
+    return'<div class="pcard"><div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px"><div><div style="font-size:14px;font-weight:500">'+(p['Name']||'—')+'</div><div style="font-size:11px;color:#888;margin-top:2px">Partner · '+(p['Address - State - D']||'—')+'</div></div>'+bdg(st)+'</div>'+
+      '<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:12px;margin-bottom:10px"><div><div style="color:#aaa;font-size:11px">Status</div><div style="font-weight:500">'+st+'</div></div><div><div style="color:#aaa;font-size:11px">Progress</div><div style="font-weight:500">'+(p['Partnership Progress - D']||'—')+'</div></div></div>'+
+      '<div class="pb"><div class="pbf" style="width:'+(st==='Active'?'75':st.includes('Expiring')?'95':'30')+'%"></div></div></div>';
+  }).join(''):'<div class="loading">No partners match</div>';
+}
+
+var _plBuilt=false;
+function buildPL() {
+  var fy=document.getElementById('pl-fy').value;
+  var type=document.getElementById('pl-type').value;
+  var sl=document.getElementById('pl-sl').value;
+  var data=D.opps.filter(function(o){
+    if(!SEGS[stg(o)]) return false;
+    if(type&&(o['Partner Type']||'')!==type) return false;
+    if(sl&&!(o['Service Lines']||[]).includes(sl)) return false;
     return true;
   });
+  function st(s){return data.filter(function(o){return stg(o)===s;}).reduce(function(a,o){return a+fv(o,fy)/1000;},0);}
+  var total=data.reduce(function(a,o){return a+fv(o,fy)/1000;},0);
+  var aw=st('Awarded'), prop=st('Proposal')+st('Negotiation');
+  document.getElementById('pl-met').innerHTML=
+    '<div class="mc"><div class="ml">Total pipeline</div><div class="mv" style="color:#534AB7">'+fk(total)+'</div><div class="ms">'+data.length+' opps</div></div>'+
+    '<div class="mc"><div class="ml">Awarded</div><div class="mv" style="color:#3B6D11">'+fk(aw)+'</div><div class="ms">'+data.filter(function(o){return stg(o)==='Awarded';}).length+' partners</div></div>'+
+    '<div class="mc"><div class="ml">In proposal/negotiation</div><div class="mv" style="color:#854F0B">'+fk(prop)+'</div><div class="ms">Likely to close</div></div>'+
+    '<div class="mc"><div class="ml">Avg deal size</div><div class="mv">'+fk(data.length?total/data.length:0)+'</div><div class="ms">Filtered set</div></div>'+
+    '<div class="mc"><div class="ml">MOUs (awarded)</div><div class="mv">'+data.filter(function(o){return stg(o)==='Awarded';}).length+'</div><div class="ms">Partners</div></div>';
+  var actS=STAGES.filter(function(s){return SEGS[s];});
+  var sv=actS.map(function(s){return Math.round(st(s));});
+  var sco=actS.map(function(s){return SC[s];});
+  document.getElementById('lg-pl1').innerHTML=actS.map(function(s,i){return'<span class="li"><span class="lsq" style="background:'+sco[i]+'"></span>'+s+' '+fk(sv[i])+'</span>';}).join('');
+  mkC('cv-pl1',{type:'bar',data:{labels:actS,datasets:[{data:sv,backgroundColor:sco,borderRadius:4,borderSkipped:false}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:function(c){return' '+fk(c.raw);}}}},scales:{x:{ticks:{callback:function(v){return fk(v);}},grid:{color:'rgba(0,0,0,.05)'}},y:{grid:{display:false}}}}});
+  var ds2=['Awarded','Proposal','Negotiation','Outreach','Prospect'];
+  var dc2=['#534AB7','#BA7517','#5DCAA5','#AFA9EC','#D3D1C7'];
+  var dv2=ds2.map(function(s){return Math.round(st(s));});
+  document.getElementById('lg-pl2').innerHTML=ds2.map(function(s,i){return'<span class="li"><span class="lsq" style="background:'+dc2[i]+'"></span>'+s+' '+fk(dv2[i])+'</span>';}).join('');
+  mkC('cv-pl2',{type:'doughnut',data:{labels:ds2,datasets:[{data:dv2,backgroundColor:dc2,borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,cutout:'58%',plugins:{legend:{display:false},tooltip:{callbacks:{label:function(c){return' '+c.label+': '+fk(c.raw);}}}}}});
+  var y25=Math.round(data.reduce(function(a,o){return a+(parseFloat(o['FY25 Fee For Service'])||0)/1000;},0));
+  var y26=Math.round(data.reduce(function(a,o){return a+(parseFloat(o['FY26 Fee for Service'])||0)/1000;},0));
+  var y27=Math.round(data.reduce(function(a,o){return a+(parseFloat(o['FY27 Fee for service'])||0)/1000;},0));
+  document.getElementById('lg-pl3').innerHTML='<span class="li"><span class="lsq" style="background:#534AB7"></span>Fee-for-service</span>';
+  mkC('cv-pl3',{type:'bar',data:{labels:['FY25','FY26','FY27 est.'],datasets:[{data:[y25,y26,y27],backgroundColor:['#AFA9EC','#534AB7','#D3D1C7'],borderRadius:4,borderSkipped:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:function(c){return' '+fk(c.raw);}}}},scales:{x:{grid:{display:false},ticks:{autoSkip:false}},y:{ticks:{callback:function(v){return fk(v);}},grid:{color:'rgba(0,0,0,.05)'}}}}});
+  var SLS=['PD','Curriculum','Assessment','Rubric'];
+  var slC=['#534AB7','#1D9E75','#D85A30','#BA7517'];
+  var slV=SLS.map(function(s){return Math.round(data.filter(function(o){return(o['Service Lines']||[]).includes(s);}).reduce(function(a,o){return a+fv(o,fy)/1000;},0));});
+  document.getElementById('lg-pl4').innerHTML=SLS.map(function(s,i){return'<span class="li"><span class="lsq" style="background:'+slC[i]+'"></span>'+s+' '+fk(slV[i])+'</span>';}).join('');
+  mkC('cv-pl4',{type:'bar',data:{labels:SLS,datasets:[{data:slV,backgroundColor:slC,borderRadius:4,borderSkipped:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:function(c){return' '+fk(c.raw);}}}},scales:{x:{grid:{display:false},ticks:{autoSkip:false}},y:{ticks:{callback:function(v){return fk(v);}},grid:{color:'rgba(0,0,0,.05)'}}}}});
+  var top8=data.slice().sort(function(a,b){return fv(b,fy)-fv(a,fy);}).slice(0,8);
+  var t8c=top8.map(function(o){return SC[stg(o)]||'#888';});
+  document.getElementById('lg-pl5').innerHTML='<span class="li"><span class="lsq" style="background:#534AB7"></span>Awarded</span><span class="li"><span class="lsq" style="background:#5DCAA5"></span>Negotiation</span><span class="li"><span class="lsq" style="background:#BA7517"></span>Proposal</span>';
+  mkC('cv-pl5',{type:'bar',data:{labels:top8.map(function(o){return(o['Partnership']||'—').split('|').pop().trim().replace(' USD','').replace(' District','').substring(0,16);}),datasets:[{data:top8.map(function(o){return Math.round(fv(o,fy)/1000);}),backgroundColor:t8c,borderRadius:4,borderSkipped:false}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:function(c){return' '+fk(c.raw);}}}},scales:{x:{ticks:{callback:function(v){return fk(v);}},grid:{color:'rgba(0,0,0,.05)'}},y:{grid:{display:false},ticks:{font:{size:10}}}}}});
+  buildKanban(data,fy); renderList(); _plBuilt=true;
 }
 
-function buildPL() {
-  const data = plFiltered();
-  const fy = getFY();
-  const STAGES = ['Prospect','Outreach','Proposal','Negotiation','Awarded'];
-  const SC = {Prospect:'#D3D1C7',Outreach:'#AFA9EC',Proposal:'#BA7517',Negotiation:'#5DCAA5',Awarded:'#534AB7'};
-
-  // Get stage from Funding Stage or Pipeline Status
-  function getStage(o) { return o['Funding Stage'] || o['Pipeline Status'] || 'Prospect'; }
-  function stageTot(s) { return data.filter(o=>getStage(o)===s).reduce((a,o)=>a+getFFSVal(o,fy)/1000,0); }
-
-  const total = data.reduce((a,o)=>a+getFFSVal(o,fy)/1000,0);
-  const awarded = data.filter(o=>getStage(o)==='Awarded').reduce((a,o)=>a+getFFSVal(o,fy)/1000,0);
-  const prop = data.filter(o=>['Proposal','Negotiation'].includes(getStage(o))).reduce((a,o)=>a+getFFSVal(o,fy)/1000,0);
-  document.getElementById('pl-metrics').innerHTML =
-    `<div class="mc"><div class="ml">Total pipeline</div><div class="mv" style="color:#534AB7">${fk(total)}</div><div class="ms">${data.length} opportunities</div></div>`+
-    `<div class="mc"><div class="ml">Awarded</div><div class="mv" style="color:#3B6D11">${fk(awarded)}</div><div class="ms">${data.filter(o=>getStage(o)==='Awarded').length} partners</div></div>`+
-    `<div class="mc"><div class="ml">In proposal/negotiation</div><div class="mv" style="color:#854F0B">${fk(prop)}</div><div class="ms">Likely to close</div></div>`+
-    `<div class="mc"><div class="ml">Avg deal size</div><div class="mv">${fk(data.length?Math.round(total/data.length):0)}</div><div class="ms">Filtered set</div></div>`+
-    `<div class="mc"><div class="ml">MOUs signed</div><div class="mv">${data.filter(o=>getStage(o)==='Awarded').length}</div><div class="ms">Of ${data.length} opps</div></div>`;
-
-  // Chart 1 — FFS by stage (hbar)
-  const activeS = STAGES.filter(s=>activeSegs[s]);
-  const sv = activeS.map(s=>Math.round(stageTot(s)));
-  const sc = activeS.map(s=>SC[s]);
-  document.getElementById('leg-pl1').innerHTML = activeS.map((s,i)=>`<span class="li"><span class="lsq" style="background:${sc[i]}"></span>${s} ${fk(sv[i])}</span>`).join('');
-  mkChart('pl1',{type:'bar',data:{labels:activeS,datasets:[{data:sv,backgroundColor:sc,borderRadius:4,borderSkipped:false}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>' '+fk(c.raw)}}},scales:{x:{ticks:{callback:v=>fk(v)},grid:{color:'rgba(0,0,0,.05)'}},y:{grid:{display:false}}}}});
-
-  // Chart 2 — Funding stage donut
-  const ds2 = ['Awarded','Proposal','Negotiation','Outreach','Prospect'];
-  const dc2 = ['#534AB7','#BA7517','#5DCAA5','#AFA9EC','#D3D1C7'];
-  const dv2 = ds2.map(s=>Math.round(stageTot(s)));
-  document.getElementById('leg-pl2').innerHTML = ds2.map((s,i)=>`<span class="li"><span class="lsq" style="background:${dc2[i]}"></span>${s} ${fk(dv2[i])}</span>`).join('');
-  mkChart('pl2',{type:'doughnut',data:{labels:ds2,datasets:[{data:dv2,backgroundColor:dc2,borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,cutout:'58%',plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>' '+c.label+': '+fk(c.raw)}}}}});
-
-  // Chart 3 — FFS by fiscal year
-  const fy25v = Math.round(data.reduce((a,o)=>a+(parseFloat(o['FY25 Fee For Service'])||0)/1000,0));
-  const fy26v = Math.round(data.reduce((a,o)=>a+(parseFloat(o['FY26 Fee for Service'])||0)/1000,0));
-  const fy27v = Math.round(data.reduce((a,o)=>a+(parseFloat(o['FY27 Fee for service'])||0)/1000,0));
-  document.getElementById('leg-pl3').innerHTML = '<span class="li"><span class="lsq" style="background:#534AB7"></span>Fee-for-service</span>';
-  mkChart('pl3',{type:'bar',data:{labels:['FY25','FY26','FY27 est.'],datasets:[{data:[fy25v,fy26v,fy27v],backgroundColor:['#AFA9EC','#534AB7','#D3D1C7'],borderRadius:4,borderSkipped:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>' '+fk(c.raw)}}},scales:{x:{grid:{display:false},ticks:{autoSkip:false}},y:{ticks:{callback:v=>fk(v)},grid:{color:'rgba(0,0,0,.05)'}}}}});
-
-  // Chart 4 — Service lines
-  const SLS = ['PD','Curriculum','Assessment','Rubric'];
-  const slC = ['#534AB7','#1D9E75','#D85A30','#BA7517'];
-  const slV = SLS.map(sl=>Math.round(data.filter(o=>(o['Service Lines']||[]).includes(sl)).reduce((a,o)=>a+getFFSVal(o,fy)/1000,0)));
-  document.getElementById('leg-pl4').innerHTML = SLS.map((s,i)=>`<span class="li"><span class="lsq" style="background:${slC[i]}"></span>${s} ${fk(slV[i])}</span>`).join('');
-  mkChart('pl4',{type:'bar',data:{labels:SLS,datasets:[{data:slV,backgroundColor:slC,borderRadius:4,borderSkipped:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>' '+fk(c.raw)}}},scales:{x:{grid:{display:false},ticks:{autoSkip:false}},y:{ticks:{callback:v=>fk(v)},grid:{color:'rgba(0,0,0,.05)'}}}}});
-
-  // Chart 5 — By partnership (top 8)
-  const top8 = data.slice().sort((a,b)=>getFFSVal(b,fy)-getFFSVal(a,fy)).slice(0,8);
-  const t8c = top8.map(o=>SC[getStage(o)]||'#888');
-  document.getElementById('leg-pl5').innerHTML = '<span class="li"><span class="lsq" style="background:#534AB7"></span>Awarded</span><span class="li"><span class="lsq" style="background:#5DCAA5"></span>Negotiation</span><span class="li"><span class="lsq" style="background:#BA7517"></span>Proposal</span>';
-  mkChart('pl5',{type:'bar',data:{labels:top8.map(o=>(o['Partnership']||'—').split('|').pop().trim().replace(' USD','').replace(' District','').substring(0,16)),datasets:[{data:top8.map(o=>Math.round(getFFSVal(o,fy)/1000)),backgroundColor:t8c,borderRadius:4,borderSkipped:false}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>' '+fk(c.raw)}}},scales:{x:{ticks:{callback:v=>fk(v)},grid:{color:'rgba(0,0,0,.05)'}},y:{grid:{display:false},ticks:{font:{size:10}}}}}});
-
-  buildKanban(data, getStage);
-  renderList();
-}
-
-function buildKanban(data, getStage) {
-  const STAGES = ['Prospect','Outreach','Proposal','Negotiation','Awarded'];
-  const SC = {Prospect:'#D3D1C7',Outreach:'#AFA9EC',Proposal:'#BA7517',Negotiation:'#1D9E75',Awarded:'#534AB7'};
-  const fy = getFY();
-  document.getElementById('kb-metrics').innerHTML = STAGES.map(s=>{
-    const grp = data.filter(o=>getStage(o)===s);
-    const val = Math.round(grp.reduce((a,o)=>a+(parseFloat(o['FY26 Fee for Service'])||0)/1000,0));
-    return `<div class="mc" style="${s==='Awarded'?'border-color:#534AB7':''}"><div class="ml">${s}</div><div class="mv" style="font-size:19px;${s==='Awarded'?'color:#534AB7':''}">${grp.length}</div><div class="ms">${val?fk(val)+' FY26':'—'}</div></div>`;
+function buildKanban(data,fy){
+  document.getElementById('kb-met').innerHTML=STAGES.map(function(s){
+    var g=data.filter(function(o){return stg(o)===s;}); var v=Math.round(g.reduce(function(a,o){return a+(parseFloat(o['FY26 Fee for Service'])||0)/1000;},0));
+    return'<div class="mc" style="'+(s==='Awarded'?'border-color:#534AB7':'')+'"><div class="ml">'+s+'</div><div class="mv" style="font-size:19px;'+(s==='Awarded'?'color:#534AB7':'')+'">'+(g.length)+'</div><div class="ms">'+(v?fk(v)+' FY26':'—')+'</div></div>';
   }).join('');
-  document.getElementById('kb-cols').innerHTML = STAGES.map(s=>{
-    const grp = data.filter(o=>getStage(o)===s).slice(0,5);
-    const col = SC[s];
-    const cards = grp.map(o=>{
-      const val = Math.round((parseFloat(o['FY26 Fee for Service'])||0)/1000);
-      const name = (o['Partnership']||'—').split('|').pop().trim();
-      return `<div class="kcard" style="${['Awarded','Negotiation'].includes(s)?'border-left:2.5px solid '+col+';border-radius:0 8px 8px 0':''}"><div class="kn">${name}</div><div class="ks">${(o['Partner Type']||'—')}</div>${val?'<div class="kv" style="color:'+col+'">'+fk(val)+'</div>':''}</div>`;
-    }).join('');
-    const awarded = s==='Awarded';
-    return `<div class="kcol"><div class="khd" style="${awarded?'color:#3B6D11':''}">${s}<span class="kct" style="${awarded?'background:#EAF3DE;color:#3B6D11':''}">${grp.length}</span></div>${cards}</div>`;
+  document.getElementById('kb-cols').innerHTML=STAGES.map(function(s){
+    var g=data.filter(function(o){return stg(o)===s;}).slice(0,5);
+    var col=SC[s]; var aw=s==='Awarded';
+    return'<div class="kcol"><div class="khd" style="'+(aw?'color:#3B6D11':'')+'">'+s+'<span class="kct" style="'+(aw?'background:#EAF3DE;color:#3B6D11':'')+'">'+g.length+'</span></div>'+
+      g.map(function(o){var v=Math.round((parseFloat(o['FY26 Fee for Service'])||0)/1000);var n=(o['Partnership']||'—').split('|').pop().trim().replace(' USD','').replace(' District','');
+        return'<div class="kcard" style="'+(aw||s==='Negotiation'?'border-left:2.5px solid '+col+';border-radius:0 8px 8px 0':'')+'"><div class="kn">'+n+'</div><div class="ks">'+(o['Partner Type']||'—')+'</div>'+(v?'<div class="kv" style="color:'+col+'">'+fk(v)+'</div>':'')+'</div>';
+      }).join('')+'</div>';
   }).join('');
 }
 
-function renderList() {
-  const sort = document.getElementById('ls-sort').value;
-  const stg = document.getElementById('ls-stage').value;
-  const STAGES = ['Awarded','Negotiation','Proposal','Outreach','Prospect'];
-  function getStage(o) { return o['Funding Stage'] || o['Pipeline Status'] || 'Prospect'; }
-  let data = DATA.opps.filter(o=>!stg || getStage(o)===stg);
-  if (sort==='val') data.sort((a,b)=>(parseFloat(b['FY26 Fee for Service'])||0)-(parseFloat(a['FY26 Fee for Service'])||0));
-  else if (sort==='stage') data.sort((a,b)=>STAGES.indexOf(getStage(a))-STAGES.indexOf(getStage(b)));
-  else data.sort((a,b)=>(a['Partnership']||'').localeCompare(b['Partnership']||''));
-  document.getElementById('ls-body').innerHTML = data.map(o=>{
-    const fy26 = Math.round((parseFloat(o['FY26 Fee for Service'])||0)/1000);
-    const fy27 = Math.round((parseFloat(o['FY27 Fee for service'])||0)/1000);
-    const name = (o['Partnership']||'—').split('|').pop().trim();
-    return `<tr><td style="font-weight:500">${name}</td><td>${o['Partner Type']||'—'}</td><td>${statusBadge(getStage(o))}</td><td>${(o['Service Lines']||[]).join(', ')||'—'}</td><td>${fy26?fk(fy26):'—'}</td><td style="color:#aaa">${fy27?fk(fy27):'—'}</td><td>—</td></tr>`;
-  }).join('') || '<tr><td colspan="7" style="color:#aaa;padding:12px 10px">No records</td></tr>';
+function renderList(){
+  var sort=document.getElementById('ls-sort').value;
+  var filter=document.getElementById('ls-stg').value;
+  var ord={Awarded:0,Negotiation:1,Proposal:2,Outreach:3,Prospect:4};
+  var data=D.opps.filter(function(o){return !filter||stg(o)===filter;});
+  if(sort==='val') data.sort(function(a,b){return(parseFloat(b['FY26 Fee for Service'])||0)-(parseFloat(a['FY26 Fee for Service'])||0);});
+  else if(sort==='stage') data.sort(function(a,b){return(ord[stg(a)]||0)-(ord[stg(b)]||0);});
+  else data.sort(function(a,b){return(a['Partnership']||'').localeCompare(b['Partnership']||'');});
+  document.getElementById('ls-body').innerHTML=data.map(function(o){
+    var y26=Math.round((parseFloat(o['FY26 Fee for Service'])||0)/1000);
+    var y27=Math.round((parseFloat(o['FY27 Fee for service'])||0)/1000);
+    var name=(o['Partnership']||'—').split('|').pop().trim();
+    return'<tr><td style="font-weight:500">'+name+'</td><td>'+(o['Partner Type']||'—')+'</td><td>'+bdg(stg(o))+'</td><td>'+((o['Service Lines']||[]).join(', ')||'—')+'</td><td>'+(y26?fk(y26):'—')+'</td><td style="color:#aaa">'+(y27?fk(y27):'—')+'</td></tr>';
+  }).join('')||'<tr><td colspan="6" style="color:#aaa;padding:12px 10px">No records</td></tr>';
 }
 
-function toggleSeg(el) {
-  const s = el.getAttribute('data-s');
-  activeSegs[s] = !activeSegs[s];
-  el.classList.toggle('dim', !activeSegs[s]);
-  buildPL();
+function toggleSeg(el){var s=el.getAttribute('data-s');SEGS[s]=!SEGS[s];el.classList.toggle('dim',!SEGS[s]);if(_plBuilt)buildPL();}
+
+function buildEV(){
+  var e=D.events;
+  var totP=e.reduce(function(a,x){return a+(parseInt(x['Number of Participants'])||0);},0);
+  var now=new Date();
+  var up=e.filter(function(x){return x['Date']&&new Date(x['Date'])>=now;}).sort(function(a,b){return new Date(a['Date'])-new Date(b['Date']);}).slice(0,5);
+  var rec=e.filter(function(x){return x['Date']&&new Date(x['Date'])<now;}).sort(function(a,b){return new Date(b['Date'])-new Date(a['Date']);}).slice(0,8);
+  document.getElementById('ev-sub').textContent=e.length+' events · '+fmt(totP)+' educators reached';
+  document.getElementById('ev-met').innerHTML=
+    '<div class="mc"><div class="ml">Total events</div><div class="mv">'+e.length+'</div></div>'+
+    '<div class="mc"><div class="ml">Educators reached</div><div class="mv">'+fmt(totP)+'</div></div>'+
+    '<div class="mc"><div class="ml">Upcoming</div><div class="mv" style="color:#534AB7">'+up.length+'</div></div>'+
+    '<div class="mc"><div class="ml">Avg participants</div><div class="mv">'+(e.length?Math.round(totP/e.length):0)+'</div></div>';
+  document.getElementById('ev-up').innerHTML=up.length?up.map(function(x){var dt=new Date(x['Date']);return'<div class="erow"><div class="edate"><div class="emon">'+dt.toLocaleDateString('en-US',{month:'short'})+'</div><div class="eday">'+dt.getDate()+'</div></div><div style="flex:1"><div style="font-size:13px;font-weight:500">'+(x['Event']||'—')+'</div><div style="font-size:11px;color:#aaa;margin-top:2px">'+(x['In-person v. Virtual']||'—')+' · '+(x['Number of Participants']||'—')+' est.</div></div><span class="badge '+(x['In-person v. Virtual']==='Virtual'?'bt':'bg')+'">'+(x['In-person v. Virtual']||'—')+'</span></div>'}).join(''):'<div style="color:#aaa;font-size:12px;padding:8px 0">No upcoming events found</div>';
+  var npsE=rec.filter(function(x){return x['NPS Score'];}).slice(0,6);
+  var npsV=npsE.map(function(x){return Math.round(parseFloat(x['NPS Score'])||0);});
+  var npsL=npsE.map(function(x){return(x['Event']||'—').substring(0,20);});
+  var npsC=npsV.map(function(v){return v>=75?'#1D9E75':v>=50?'#534AB7':'#AFA9EC';});
+  document.getElementById('lg-ev1').innerHTML='<span class="li"><span class="lsq" style="background:#1D9E75"></span>75+</span><span class="li"><span class="lsq" style="background:#534AB7"></span>50–74</span><span class="li"><span class="lsq" style="background:#AFA9EC"></span>Below 50</span>';
+  mkC('cv-ev1',{type:'bar',data:{labels:npsL.length?npsL:['No NPS data'],datasets:[{data:npsV.length?npsV:[0],backgroundColor:npsC,borderRadius:4,borderSkipped:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{display:false},ticks:{autoSkip:false,maxRotation:35,font:{size:10}}},y:{min:0,max:100,ticks:{stepSize:25},grid:{color:'rgba(0,0,0,.05)'}}}}});
+  document.getElementById('ev-tbl').innerHTML=rec.map(function(x){return'<tr><td>'+(x['Event']||'—').substring(0,40)+'</td><td>'+fd(x['Date'])+'</td><td>'+(x['Number of Participants']||'—')+'</td><td>'+((x['Event Type']||[]).join(', ')||'—')+'</td><td>'+(x['NPS Score']?'<span class="badge bp">'+Math.round(parseFloat(x['NPS Score']))+'</span>':'—')+'</td></tr>';}).join('')||'<tr><td colspan="5" style="color:#aaa;padding:12px 10px">No recent events</td></tr>';
 }
 
-function plSub(id, el) {
-  ['charts','kanban','list'].forEach(v => {
-    const p = document.getElementById('pl-'+v);
-    if (p) p.style.display = v===id ? 'block' : 'none';
-  });
-  document.querySelectorAll('.sni').forEach(s=>s.classList.remove('active'));
-  el.classList.add('active');
+function buildIM(){
+  var domains=['Eq. Vision','Strategy','Policy','Stakeholders','Teaching'];
+  document.getElementById('lg-im1').innerHTML='<span class="li"><span class="lsq" style="background:#D3D1C7"></span>Pre</span><span class="li"><span class="lsq" style="background:#AFA9EC"></span>Goals</span><span class="li"><span class="lsq" style="background:#534AB7"></span>Final</span>';
+  mkC('cv-im1',{type:'bar',data:{labels:domains,datasets:[{label:'Pre',data:[1.8,1.5,1.6,2.0,1.7],backgroundColor:'#D3D1C7',borderRadius:3,borderSkipped:false},{label:'Goals',data:[2.4,2.2,2.1,2.5,2.3],backgroundColor:'#AFA9EC',borderRadius:3,borderSkipped:false},{label:'Final',data:[2.8,0,0,0,0],backgroundColor:'#534AB7',borderRadius:3,borderSkipped:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{display:false},ticks:{autoSkip:false}},y:{min:0,max:4,grid:{color:'rgba(0,0,0,.05)'}}}}});
+  var pts=D.partners.slice(0,6);
+  var pn=pts.map(function(p){return(p['Name']||'—').replace(' USD','').replace(' District','').substring(0,14);});
+  var pv=pts.map(function(){return Math.round(20+Math.random()*180);});
+  document.getElementById('lg-im2').innerHTML='<span class="li"><span class="lsq" style="background:#534AB7"></span>Participants</span>';
+  mkC('cv-im2',{type:'bar',data:{labels:pn.length?pn:['No data'],datasets:[{data:pv,backgroundColor:'#534AB7',borderRadius:4,borderSkipped:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{display:false},ticks:{autoSkip:false,maxRotation:0}},y:{grid:{color:'rgba(0,0,0,.05)'}}}}});
+  var sats=[['Overall satisfaction','88%','#534AB7'],['Resources relevance','82%','#534AB7'],['Comms clarity','90%','#1D9E75'],['Objectives met','76%','#534AB7'],['AI readiness capacity','72%','#BA7517'],['Likelihood to recommend','84%','#534AB7']];
+  document.getElementById('im-sat').innerHTML=sats.map(function(x){return'<div class="rb"><div class="rl">'+x[0]+'</div><div class="pb" style="width:90px"><div class="pbf" style="width:'+x[1]+';background:'+x[2]+'"></div></div><div class="rs">'+x[1]+'</div></div>';}).join('');
 }
 
-// ─── EVENTS ───────────────────────────────────────────────────────────────────
-function buildEvents() {
-  const evts = DATA.events;
-  const totalPart = evts.reduce((a,e)=>a+(parseInt(e['Number of Participants'])||0),0);
-  const upcoming = evts.filter(e=>e['Date'] && new Date(e['Date'])>=new Date()).sort((a,b)=>new Date(a['Date'])-new Date(b['Date'])).slice(0,5);
-  const recent = evts.filter(e=>e['Date'] && new Date(e['Date'])<new Date()).sort((a,b)=>new Date(b['Date'])-new Date(a['Date'])).slice(0,8);
-
-  document.getElementById('ev-sub').textContent = `${evts.length} total events · ${fmt(totalPart)} educators reached`;
-  document.getElementById('ev-metrics').innerHTML =
-    `<div class="mc"><div class="ml">Total events</div><div class="mv">${evts.length}</div></div>`+
-    `<div class="mc"><div class="ml">Educators reached</div><div class="mv">${fmt(totalPart)}</div></div>`+
-    `<div class="mc"><div class="ml">Upcoming</div><div class="mv" style="color:#534AB7">${upcoming.length}</div></div>`+
-    `<div class="mc"><div class="ml">Avg participants</div><div class="mv">${evts.length?Math.round(totalPart/evts.length):0}</div></div>`;
-
-  document.getElementById('ev-upcoming').innerHTML = upcoming.length ? upcoming.map(e=>{
-    const dt = new Date(e['Date']);
-    return `<div class="ev-row"><div class="evd"><div class="evm">${dt.toLocaleDateString('en-US',{month:'short'})}</div><div class="evday">${dt.getDate()}</div></div><div style="flex:1"><div style="font-size:13px;font-weight:500">${e['Event']||'—'}</div><div style="font-size:11px;color:#aaa;margin-top:2px">${e['In-person v. Virtual']||'—'} · ${e['Number of Participants']||'—'} est.</div></div><span class="badge ${e['In-person v. Virtual']==='Virtual'?'bt':'bg'}">${e['In-person v. Virtual']||'—'}</span></div>`;
-  }).join('') : '<div style="color:#aaa;font-size:12px;padding:8px 0">No upcoming events</div>';
-
-  // NPS chart from recent events
-  const npsEvts = recent.filter(e=>e['NPS Score']).slice(0,6);
-  const npsLabels = npsEvts.map(e=>(e['Event']||'—').substring(0,20));
-  const npsVals = npsEvts.map(e=>Math.round(parseFloat(e['NPS Score'])||0));
-  const npsColors = npsVals.map(v=>v>=75?'#1D9E75':v>=50?'#534AB7':'#AFA9EC');
-  document.getElementById('leg-ev1').innerHTML = '<span class="li"><span class="lsq" style="background:#1D9E75"></span>75+ (promoter zone)</span><span class="li"><span class="lsq" style="background:#534AB7"></span>50–74</span><span class="li"><span class="lsq" style="background:#AFA9EC"></span>Below 50</span>';
-  mkChart('ev1',{type:'bar',data:{labels:npsLabels.length?npsLabels:['No NPS data yet'],datasets:[{data:npsVals.length?npsVals:[0],backgroundColor:npsColors,borderRadius:4,borderSkipped:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{display:false},ticks:{autoSkip:false,maxRotation:35,font:{size:10}}},y:{min:0,max:100,ticks:{stepSize:25},grid:{color:'rgba(0,0,0,.05)'}}}}});
-
-  document.getElementById('ev-table').innerHTML = recent.map(e=>
-    `<tr><td>${(e['Event']||'—').substring(0,40)}</td><td>${fmtDate(e['Date'])}</td><td>${e['Number of Participants']||'—'}</td><td>${(e['Event Type']||[]).join(', ')||'—'}</td><td>${e['NPS Score']?'<span class="badge bp">'+Math.round(parseFloat(e['NPS Score']))+'</span>':'—'}</td></tr>`
-  ).join('') || '<tr><td colspan="5" style="color:#aaa;padding:12px 10px">No recent events</td></tr>';
+function populateSel(){
+  var sel=document.getElementById('person-sel');
+  D.staff.forEach(function(s){var o=document.createElement('option');o.value=s.id;o.textContent=s['Full Name']||'Unknown';sel.appendChild(o);});
 }
 
-// ─── IMPACT ───────────────────────────────────────────────────────────────────
-function buildImpact() {
-  // Rubric domain chart — static structure, real data when rubric tables loaded
-  const domains = ['Eq. Vision','Strategy','Policy','Stakeholders','Teaching'];
-  document.getElementById('leg-im1').innerHTML = '<span class="li"><span class="lsq" style="background:#D3D1C7"></span>Pre</span><span class="li"><span class="lsq" style="background:#AFA9EC"></span>Goals</span><span class="li"><span class="lsq" style="background:#534AB7"></span>Final</span>';
-  mkChart('im1',{type:'bar',data:{labels:domains,datasets:[{label:'Pre',data:[1.8,1.5,1.6,2.0,1.7],backgroundColor:'#D3D1C7',borderRadius:3,borderSkipped:false},{label:'Goals',data:[2.4,2.2,2.1,2.5,2.3],backgroundColor:'#AFA9EC',borderRadius:3,borderSkipped:false},{label:'Final',data:[2.8,0,0,0,0],backgroundColor:'#534AB7',borderRadius:3,borderSkipped:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{display:false},ticks:{autoSkip:false}},y:{min:0,max:4,ticks:{stepSize:1},grid:{color:'rgba(0,0,0,.05)'}}}}});
+function openDash(){ document.querySelectorAll('.pg').forEach(function(p){p.classList.remove('active');}); document.getElementById('main-nav').style.display='none'; document.getElementById('pg-dash').style.display='block'; }
+function closeDash(){ document.getElementById('pg-dash').style.display='none'; document.getElementById('main-nav').style.display='flex'; go('ov',document.querySelectorAll('.ni')[0]); }
 
-  // Educators by partner
-  const topPartners = DATA.partners.slice(0,6);
-  const partNames = topPartners.map(p=>(p['Name']||'—').replace(' USD','').replace(' District','').substring(0,14));
-  const partPart = topPartners.map(()=>Math.round(20+Math.random()*180));
-  document.getElementById('leg-im2').innerHTML = '<span class="li"><span class="lsq" style="background:#534AB7"></span>Participants</span>';
-  mkChart('im2',{type:'bar',data:{labels:partNames.length?partNames:['No data yet'],datasets:[{data:partPart,backgroundColor:'#534AB7',borderRadius:4,borderSkipped:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{display:false},ticks:{autoSkip:false,maxRotation:0}},y:{grid:{color:'rgba(0,0,0,.05)'}}}}});
-
-  // Satisfaction bars
-  const sats = [['Overall satisfaction','88%','#534AB7'],['Resources relevance','82%','#534AB7'],['Comms clarity','90%','#1D9E75'],['Objectives met','76%','#534AB7'],['AI readiness capacity','72%','#BA7517'],['Likelihood to recommend','84%','#534AB7']];
-  document.getElementById('im-sat').innerHTML = sats.map(([l,v,c])=>
-    `<div class="rb"><div class="rl">${l}</div><div class="pb" style="width:90px"><div class="pbf" style="width:${v};background:${c}"></div></div><div class="rs">${v}</div></div>`
-  ).join('');
+function loadPerson(id){
+  if(!id) return;
+  var p=D.staff.find(function(s){return s.id===id;});
+  if(!p) return;
+  var name=p['Full Name']||'—';
+  var initials=name.split(' ').map(function(w){return w[0];}).join('').substring(0,2).toUpperCase();
+  var dept=(p['Department (Team)']||[]).join(', ')||'—';
+  var myO=D.opps.slice(0,4), myE=D.events.slice(0,3), myI=D.interact.slice(0,4);
+  document.getElementById('person-content').innerHTML=
+    '<div style="background:#EEEDFE;border-radius:12px;padding:16px 20px;margin-bottom:18px;display:flex;align-items:center;gap:14px">'+
+    '<div class="avatar" style="background:#CECBF6;color:#534AB7">'+initials+'</div>'+
+    '<div><div style="font-size:18px;font-weight:500">'+name+'</div><div style="font-size:12px;color:#534AB7;margin-top:2px">'+dept+' · FY26</div></div></div>'+
+    '<div class="g2">'+
+    '<div class="sc" style="margin-bottom:0"><div class="sct">Partnerships in pipeline</div>'+
+    myO.map(function(o){var n=(o['Partnership']||'—').split('|').pop().trim();var s=stg(o);var v=Math.round((parseFloat(o['FY26 Fee for Service'])||0)/1000);return'<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid rgba(0,0,0,.06)"><div style="width:30px;height:30px;border-radius:8px;background:#EEEDFE;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500;color:#534AB7;flex-shrink:0">'+n.substring(0,2).toUpperCase()+'</div><div style="flex:1"><div style="font-size:13px;font-weight:500">'+n+'</div><div style="font-size:11px;color:#aaa">'+(v?fk(v):'—')+'</div></div>'+bdg(s)+'</div>';}).join('')+'</div>'+
+    '<div class="sc" style="margin-bottom:0"><div class="sct">Recent interactions</div>'+
+    myI.map(function(i){return'<div class="act"><div class="adot" style="background:#534AB7"></div><div><div class="atxt">'+(i['Title / Name']||'—')+'</div><div class="atime">'+fd(i['Date & Time'])+'</div></div></div>';}).join('')+
+    '<button class="btn btn-p" style="margin-top:10px;width:100%">+ Log interaction</button></div></div>'+
+    '<div class="sc" style="margin-top:12px"><div class="sct">Upcoming events</div>'+
+    myE.map(function(e){var dt=e['Date']?new Date(e['Date']):null;return'<div style="display:flex;gap:10px;padding:8px 0;border-bottom:1px solid rgba(0,0,0,.06)">'+(dt?'<div style="width:36px;text-align:center;flex-shrink:0"><div style="font-size:10px;color:#aaa">'+dt.toLocaleDateString('en-US',{month:'short'})+'</div><div style="font-size:16px;font-weight:500;color:#534AB7">'+dt.getDate()+'</div></div>':'')+'<div><div style="font-size:12px;font-weight:500">'+(e['Event']||'—').substring(0,40)+'</div><div style="font-size:11px;color:#aaa;margin-top:1px">'+(e['Number of Participants']||'—')+' participants</div></div></div>';}).join('')+'</div>';
 }
 
-// ─── PERSONAL DASHBOARD ───────────────────────────────────────────────────────
-function populatePersonSelect() {
-  const sel = document.getElementById('person-sel');
-  DATA.staff.forEach(s => {
-    const opt = document.createElement('option');
-    opt.value = s.id;
-    opt.textContent = s['Full Name']||'Unknown';
-    sel.appendChild(opt);
-  });
+function go(id,el){
+  document.querySelectorAll('.pg').forEach(function(p){p.classList.remove('active');}); document.getElementById('pg-dash').style.display='none'; document.getElementById('main-nav').style.display='flex';
+  var pg=document.getElementById('pg-'+id); if(pg) pg.classList.add('active');
+  document.querySelectorAll('.ni').forEach(function(n){n.classList.remove('active');}); if(el) el.classList.add('active');
+  if(id==='pl'&&!_plBuilt&&D.opps.length) buildPL();
 }
 
-function openDash() {
-  document.getElementById('main-nav').style.display = 'none';
-  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  document.getElementById('pg-dash').style.display = 'block';
+function plSub(id,el){
+  ['charts','kanban','list'].forEach(function(v){document.getElementById('pl-'+v).style.display=v===id?'block':'none';});
+  document.querySelectorAll('.sni').forEach(function(s){s.classList.remove('active');}); el.classList.add('active');
 }
 
-function closeDash() {
-  document.getElementById('pg-dash').style.display = 'none';
-  document.getElementById('main-nav').style.display = 'flex';
-  go('ov', document.querySelectorAll('.ni')[0]);
-}
-
-function loadPerson(id) {
-  if (!id) return;
-  const person = DATA.staff.find(s=>s.id===id);
-  if (!person) return;
-  const name = person['Full Name']||'—';
-  const initials = name.split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase();
-  const dept = (person['Department (Team)']||[]).join(', ')||'—';
-  const myOpps = DATA.opps.slice(0,4);
-  const myEvts = DATA.events.slice(0,3);
-  const myIntr = DATA.interact.slice(0,4);
-
-  document.getElementById('person-content').innerHTML = `
-    <div style="background:#EEEDFE;border-radius:12px;padding:16px 20px;margin-bottom:18px;display:flex;align-items:center;gap:14px">
-      <div class="avatar" style="background:#CECBF6;color:#534AB7">${initials}</div>
-      <div><div style="font-size:18px;font-weight:500">${name}</div><div style="font-size:12px;color:#534AB7;margin-top:2px">${dept} · FY26</div></div>
-    </div>
-    <div class="g2">
-      <div class="sc" style="margin-bottom:0">
-        <div class="sc-title">Partnerships in pipeline</div>
-        ${myOpps.map(o=>{
-          const oname = (o['Partnership']||'—').split('|').pop().trim();
-          const stage = o['Funding Stage']||o['Pipeline Status']||'—';
-          const val = Math.round((parseFloat(o['FY26 Fee for Service'])||0)/1000);
-          return `<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid rgba(0,0,0,.06)">
-            <div style="width:30px;height:30px;border-radius:8px;background:#EEEDFE;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500;color:#534AB7;flex-shrink:0">${oname.substring(0,2).toUpperCase()}</div>
-            <div style="flex:1"><div style="font-size:13px;font-weight:500">${oname}</div><div style="font-size:11px;color:#aaa">${val?fk(val):''}</div></div>
-            ${statusBadge(stage)}
-          </div>`;
-        }).join('')}
-      </div>
-      <div class="sc" style="margin-bottom:0">
-        <div class="sc-title">Recent events</div>
-        ${myEvts.map(e=>{
-          const dt = e['Date'] ? new Date(e['Date']) : null;
-          return `<div style="display:flex;gap:10px;padding:8px 0;border-bottom:1px solid rgba(0,0,0,.06);align-items:flex-start">
-            ${dt?`<div style="width:36px;text-align:center;flex-shrink:0"><div style="font-size:10px;color:#aaa">${dt.toLocaleDateString('en-US',{month:'short'})}</div><div style="font-size:16px;font-weight:500;color:#534AB7">${dt.getDate()}</div></div>`:''}
-            <div><div style="font-size:12px;font-weight:500">${(e['Event']||'—').substring(0,40)}</div><div style="font-size:11px;color:#aaa;margin-top:1px">${e['Number of Participants']||'—'} participants</div></div>
-          </div>`;
-        }).join('')}
-      </div>
-    </div>
-    <div class="sc" style="margin-top:12px">
-      <div class="sc-title">Recent interactions</div>
-      ${myIntr.map(i=>`<div class="act"><div class="adot" style="background:#534AB7"></div><div><div class="atxt">${i['Title / Name']||'—'}</div><div class="atime">${fmtDate(i['Date & Time'])}</div></div></div>`).join('')}
-      <button class="btn btn-primary" style="margin-top:10px;width:100%">+ Log new interaction</button>
-    </div>`;
-}
-
-// ─── CHART HELPER ─────────────────────────────────────────────────────────────
-function mkChart(id, cfg) {
-  if (CH[id]) CH[id].destroy();
-  CH[id] = new Chart(document.getElementById(id), cfg);
-}
-
-// ─── NAV ──────────────────────────────────────────────────────────────────────
-function go(id, el) {
-  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  document.getElementById('pg-dash').style.display = 'none';
-  document.getElementById('main-nav').style.display = 'flex';
-  const pg = document.getElementById('pg-'+id);
-  if (pg) pg.classList.add('active');
-  document.querySelectorAll('.ni').forEach(n=>n.classList.remove('active'));
-  if (el) el.classList.add('active');
-}
-
-// ─── INIT ─────────────────────────────────────────────────────────────────────
 loadAll();
 </script>
 </body>
